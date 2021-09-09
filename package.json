@@ -1,0 +1,34 @@
+{
+  "name": "rdf-utils-namespace",
+  "version": "0.0.0",
+  "description": "RDF/JS namespace utils",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "coverage": "codecov",
+    "test": "stricter-standard && c8 --reporter=lcov --reporter=text-summary mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bergos/rdf-utils-namespace.git"
+  },
+  "keywords": [],
+  "author": "Thomas Bergwinkl <bergi@axolotlfarm.org> (https://www.bergnet.org/people/bergi/card#me)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bergos/rdf-utils-namespace/issues"
+  },
+  "homepage": "https://github.com/bergos/rdf-utils-namespace",
+  "dependencies": {
+    "rdf-ext": "^1.3.5",
+    "readable-stream": "^3.6.0"
+  },
+  "devDependencies": {
+    "c8": "^7.8.0",
+    "codecov": "^3.8.3",
+    "get-stream": "^6.0.1",
+    "isstream": "^0.1.2",
+    "mocha": "^9.1.1",
+    "stricter-standard": "^0.2.0"
+  }
+}
