@@ -1,6 +1,6 @@
 {
   "name": "rdf-utils-namespace",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "RDF/JS namespace utils",
   "type": "module",
   "main": "index.js",
