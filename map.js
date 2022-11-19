@@ -1,50 +1,64 @@
 import rdf from 'rdf-ext'
 import { Transform } from 'readable-stream'
 
-function mapDataset (dataset, from, to, { factory = rdf } = {}) {
-  return factory.dataset([...dataset].map(quad => mapQuad(quad, from, to, { factory })))
-}
+function mapDataset (map, { factory = rdf } = {}) {
+  const mapper = mapQuad(map, { factory })
 
-function mapQuad (quad, from, to, { factory = rdf } = {}) {
-  const subject = mapTerm(quad.subject, from, to, { factory })
-  const predicate = mapTerm(quad.predicate, from, to, { factory })
-  const object = mapTerm(quad.object, from, to, { factory })
-  const graph = mapTerm(quad.graph, from, to, { factory })
-
-  if (subject === quad.subject && predicate === quad.predicate && object === quad.object && graph === quad.graph) {
-    return quad
+  return dataset => {
+    return factory.dataset([...dataset].map(quad => mapper(quad)))
   }
-
-  return factory.quad(subject, predicate, object, graph)
 }
 
-function mapStream (from, to, { factory = rdf } = {}) {
+function mapQuad (map, { factory = rdf } = {}) {
+  const mapper = mapTerm(map, { factory })
+
+  return quad => {
+    const subject = mapper(quad.subject)
+    const predicate = mapper(quad.predicate)
+    const object = mapper(quad.object)
+    const graph = mapper(quad.graph)
+
+    if (subject === quad.subject && predicate === quad.predicate && object === quad.object && graph === quad.graph) {
+      return quad
+    }
+
+    return factory.quad(subject, predicate, object, graph)
+  }
+}
+
+function mapStream (map, { factory = rdf } = {}) {
+  const mapper = mapQuad(map, { factory })
+
   return new Transform({
     objectMode: true,
     transform (quad, encoding, callback) {
-      callback(null, mapQuad(quad, from, to, { factory }))
+      callback(null, mapper(quad))
     }
   })
 }
 
-function mapTerm (term, from, to, { factory = rdf } = {}) {
-  if (!term) {
+function mapTerm (map, { factory = rdf } = {}) {
+  return term => {
+    if (!term) {
+      return term
+    }
+
+    if (term.termType !== 'NamedNode') {
+      return term
+    }
+
+    for (const [from, to] of map) {
+      const fromStr = from.value || from.toString()
+
+      if (term.value.startsWith(fromStr)) {
+        const toStr = to.value || to.toString()
+
+        return factory.namedNode(toStr + term.value.slice(fromStr.length))
+      }
+    }
+
     return term
   }
-
-  if (term.termType !== 'NamedNode') {
-    return term
-  }
-
-  const fromStr = from.value || from.toString()
-
-  if (!term.value.startsWith(fromStr)) {
-    return term
-  }
-
-  const toStr = to.value || to.toString()
-
-  return factory.namedNode(toStr + term.value.slice(fromStr.length))
 }
 
 export {
