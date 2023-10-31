@@ -1,9 +1,9 @@
 import { notStrictEqual, strictEqual } from 'assert'
-import getStream from 'get-stream'
-import { isDuplex } from 'isstream'
+import { isDuplexStream } from 'is-stream'
 import { describe, it } from 'mocha'
 import rdf from 'rdf-ext'
 import { Readable } from 'readable-stream'
+import chunks from 'stream-chunks/chunks.js'
 import { mapDataset, mapQuad, mapStream, mapTerm } from '../map.js'
 
 const from = rdf.namedNode('http://abc.com/')
@@ -195,7 +195,7 @@ describe('map', () => {
     it('should return a Duplex stream', () => {
       const result = mapStream(map)
 
-      strictEqual(isDuplex(result), true)
+      strictEqual(isDuplexStream(result), true)
     })
 
     it('should map all matching NamedNodes', async () => {
@@ -241,7 +241,7 @@ describe('map', () => {
         )
       ]
 
-      const result = await getStream.array(input.pipe(mapStream(map)))
+      const result = await chunks(input.pipe(mapStream(map)))
 
       strictEqual(result[0].equals(expected[0]), true)
       strictEqual(result[1].equals(expected[1]), true)
