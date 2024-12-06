@@ -23,7 +23,7 @@
     "readable-stream": "^4.4.2"
   },
   "devDependencies": {
-    "c8": "^8.0.1",
+    "c8": "^10.1.2",
     "is-stream": "^4.0.1",
     "mocha": "^11.0.1",
     "stream-chunks": "^1.0.0",
